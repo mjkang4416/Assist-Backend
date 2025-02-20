@@ -17,4 +17,4 @@ ENV DATABASE_URL=jdbc:mysql://mysql:3306/AssistPeople?useSSL=false&serverTimezon
 
 
 # 빌드 결과 jar 파일을 실행
-CMD ["java", "-jar", "-Dspring.profiles.active=prod", "/home/gradle/project/build/libs/AssistPeople-1.0.jar"]
+CMD ["java", "-jar", "-Dspring.profiles.active=prod", "/home/gradle/project/build/libs/AssistPeople-0.0.1-SNAPSHOT.jar"]
