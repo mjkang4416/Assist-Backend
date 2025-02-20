@@ -1,15 +1,18 @@
 package com.guesthouse.assistpeople.service;
 
 import com.guesthouse.assistpeople.dto.ChatRoomDTO;
+import com.guesthouse.assistpeople.dto.ChatRoomWithMessageDTO;
 import com.guesthouse.assistpeople.entity.*;
 import com.guesthouse.assistpeople.jwt.CustomUserDetail;
 import com.guesthouse.assistpeople.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -76,6 +79,44 @@ public class ChatRoomService {
         ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(roomId);
         return messageRepository.findByRoomId(chatRoom);
     }
+
+    // 채팅방 목록 반환
+//    public List<ChatRoomWithMessageDTO> getMatchRooms(@AuthenticationPrincipal CustomUserDetail customUserDetails){
+//        UserEntity user = userRepository.findByStudentId_StudentId(principalDetails.getUsername())
+//                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다"));
+//
+//        List<participateEntity> getAllRooms = participateRepository.findByUserId(user); // 로그인한 사용자의 모든 room 찾기
+//
+//        List<ChatRoomWithMessageDTO> matchRooms = new ArrayList<>();
+//        for(int i = 0; i <getAllRooms.size(); i++){
+//            chatRoomEntity matchRoom = chatRoomRepository.findByRoomId(getAllRooms.get(i).getRoomId().getRoomId());
+//            // roomType이 0(1대1 매칭)인 채팅방 찾아서 list에 넣기
+//            if(matchRoom.getRoomType()==0){
+//                Optional<messageEntity> lastMessage = messageRepository.findFirstByRoomIdOrderBySendTime(matchRoom);
+//                ChatRoomWithMessageDTO.ChatRoomWithMessageDTOBuilder dtoBuilder = ChatRoomWithMessageDTO.builder()
+//                        .roomId(getAllRooms.get(i).getRoomId().getRoomId())
+//                        .roomName(getAllRooms.get(i).getRoomId().getRoomName())
+//                        .roomType(matchRoom.getRoomType());
+//
+//                // 마지막 메시지가 존재하는지 체크
+//                if (lastMessage.isPresent()) {
+//                    // 메시지가 존재할 경우
+//                    dtoBuilder
+//                            .messageContent(lastMessage.get().getMessageContent())
+//                            .mesaageTimestamp(lastMessage.get().getSendTime());
+//                } else {
+//                    // 메시지가 없을 경우 (null 처리)
+//                    dtoBuilder
+//                            .messageContent(null)
+//                            .mesaageTimestamp(null);
+//                }
+//
+//                // DTO 객체 생성 후 리스트에 추가
+//                matchRooms.add(dtoBuilder.build());
+//            }
+//        }
+//        return matchRooms;
+//    }
 
 
 }
