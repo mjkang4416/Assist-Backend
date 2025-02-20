@@ -31,9 +31,9 @@ public class SecurityConfig {
 
 
         private static final String[] AUTH_WHITELIST = {
-                         "/api/v1/member/**", "/api-docs",
+                        "/api/v1/member/**", "/api-docs",
                 "/v3/api-docs/**", "/api-docs/**", "/api/v1/auth/**",
-                "user/signup", "user/login","/api/swagger-ui/**"
+                "user/signup", "user/login","/api/doc/swagger-ui/**"
         }; //더 열어둘 엔드포인트 여기에 추가
 
 
