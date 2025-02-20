@@ -1,15 +1,9 @@
 package com.guesthouse.assistpeople.service;
 
 import com.guesthouse.assistpeople.dto.ChatRoomDTO;
-import com.guesthouse.assistpeople.entity.ChatRoomEntity;
-import com.guesthouse.assistpeople.entity.PerticipateEntity;
-import com.guesthouse.assistpeople.entity.PostEntity;
-import com.guesthouse.assistpeople.entity.UserEntity;
+import com.guesthouse.assistpeople.entity.*;
 import com.guesthouse.assistpeople.jwt.CustomUserDetail;
-import com.guesthouse.assistpeople.repository.ChatRoomRepository;
-import com.guesthouse.assistpeople.repository.ParticipateRepository;
-import com.guesthouse.assistpeople.repository.PostRepository;
-import com.guesthouse.assistpeople.repository.UserRepository;
+import com.guesthouse.assistpeople.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -29,6 +24,9 @@ public class ChatRoomService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final ParticipateRepository participateRepository;
+    private final MessageRepository messageRepository;
+
+    // 채팅방 만들어주는 로직
     @Transactional
     public ChatRoomDTO createChatRoom(Long postId,@AuthenticationPrincipal CustomUserDetail customUserDetails) {
 
@@ -71,6 +69,12 @@ public class ChatRoomService {
         ChatRoomDTO chatRoomDTO = new ChatRoomDTO();
         chatRoomDTO.setRoomId(chatRoom.getRoomId());
         return chatRoomDTO;
+    }
+
+    // 채팅방 상세 보기
+    public List<MessageEntity> roomDetail(Long roomId){
+        ChatRoomEntity chatRoom = chatRoomRepository.findByRoomId(roomId);
+        return messageRepository.findByRoomId(chatRoom);
     }
 
 
