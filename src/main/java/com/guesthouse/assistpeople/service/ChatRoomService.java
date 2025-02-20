@@ -31,15 +31,18 @@ public class ChatRoomService {
 
     // 채팅방 만들어주는 로직
     @Transactional
-    public ChatRoomDTO createChatRoom(Long postId,@AuthenticationPrincipal CustomUserDetail customUserDetails) {
-
+    public ChatRoomDTO createChatRoom(Long postId,String userName) {
+        log.info(userName);
         //user1 찾기
-        UserEntity user1 = userRepository.findById(customUserDetails.getUsername());
+        UserEntity user1 = userRepository.findById(userName);
+        log.info(user1.getNickName());
 
         //user2 찾기
         PostEntity post = postRepository.findByPostId(postId);
-        UserEntity user2 = userRepository.findById(post.getUser().getId());
+        log.info(post.getConcept());
 
+        UserEntity user2 = userRepository.findById(post.getUser().getId());
+        log.info(user2.getId());
         // 동시성 제어->동일한 채팅방 생기지 않게 , user1 은 로그인된 유저, user2는 post 올린 유저 가져오기
         Optional<ChatRoomEntity> existingRoom = chatRoomRepository.findByRoomName(user1.getNickName(), user2.getNickName());
         if (existingRoom.isPresent()) {
@@ -80,43 +83,40 @@ public class ChatRoomService {
         return messageRepository.findByRoomId(chatRoom);
     }
 
-    // 채팅방 목록 반환
-//    public List<ChatRoomWithMessageDTO> getMatchRooms(@AuthenticationPrincipal CustomUserDetail customUserDetails){
-//        UserEntity user = userRepository.findByStudentId_StudentId(principalDetails.getUsername())
-//                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다"));
-//
-//        List<participateEntity> getAllRooms = participateRepository.findByUserId(user); // 로그인한 사용자의 모든 room 찾기
-//
-//        List<ChatRoomWithMessageDTO> matchRooms = new ArrayList<>();
-//        for(int i = 0; i <getAllRooms.size(); i++){
-//            chatRoomEntity matchRoom = chatRoomRepository.findByRoomId(getAllRooms.get(i).getRoomId().getRoomId());
-//            // roomType이 0(1대1 매칭)인 채팅방 찾아서 list에 넣기
-//            if(matchRoom.getRoomType()==0){
-//                Optional<messageEntity> lastMessage = messageRepository.findFirstByRoomIdOrderBySendTime(matchRoom);
-//                ChatRoomWithMessageDTO.ChatRoomWithMessageDTOBuilder dtoBuilder = ChatRoomWithMessageDTO.builder()
-//                        .roomId(getAllRooms.get(i).getRoomId().getRoomId())
-//                        .roomName(getAllRooms.get(i).getRoomId().getRoomName())
-//                        .roomType(matchRoom.getRoomType());
-//
-//                // 마지막 메시지가 존재하는지 체크
-//                if (lastMessage.isPresent()) {
-//                    // 메시지가 존재할 경우
-//                    dtoBuilder
-//                            .messageContent(lastMessage.get().getMessageContent())
-//                            .mesaageTimestamp(lastMessage.get().getSendTime());
-//                } else {
-//                    // 메시지가 없을 경우 (null 처리)
-//                    dtoBuilder
-//                            .messageContent(null)
-//                            .mesaageTimestamp(null);
-//                }
-//
-//                // DTO 객체 생성 후 리스트에 추가
-//                matchRooms.add(dtoBuilder.build());
-//            }
-//        }
-//        return matchRooms;
-//    }
+    // 채팅방 목록 반환 (마지막 메세지까지)
+    public List<ChatRoomWithMessageDTO> getMatchRooms(@AuthenticationPrincipal CustomUserDetail customUserDetails){
+        UserEntity user = userRepository.findById(customUserDetails.getUsername());
+
+        List<PerticipateEntity> getAllRooms = participateRepository.findByUserId(user); // 로그인한 사용자의 모든 room 찾기
+
+        List<ChatRoomWithMessageDTO> matchRooms = new ArrayList<>();
+        for(int i = 0; i <getAllRooms.size(); i++){
+            ChatRoomEntity matchRoom = chatRoomRepository.findByRoomId(getAllRooms.get(i).getRoomId().getRoomId());
+            // roomType이 0(1대1 매칭)인 채팅방 찾아서 list에 넣기
+                Optional<MessageEntity> lastMessage = messageRepository.findFirstByRoomIdOrderBySendTime(matchRoom);
+                ChatRoomWithMessageDTO.ChatRoomWithMessageDTOBuilder dtoBuilder = ChatRoomWithMessageDTO.builder()
+                        .roomId(getAllRooms.get(i).getRoomId().getRoomId())
+                        .roomName(getAllRooms.get(i).getRoomId().getRoomName());
+
+                // 마지막 메시지가 존재하는지 체크
+                if (lastMessage.isPresent()) {
+                    // 메시지가 존재할 경우
+                    dtoBuilder
+                            .messageContent(lastMessage.get().getMessageContent())
+                            .mesaageTimestamp(lastMessage.get().getSendTime());
+                } else {
+                    // 메시지가 없을 경우 (null 처리)
+                    dtoBuilder
+                            .messageContent(null)
+                            .mesaageTimestamp(null);
+                }
+
+                // DTO 객체 생성 후 리스트에 추가
+                matchRooms.add(dtoBuilder.build());
+
+        }
+        return matchRooms;
+    }
 
 
 }

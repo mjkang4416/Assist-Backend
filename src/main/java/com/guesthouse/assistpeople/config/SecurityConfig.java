@@ -29,11 +29,11 @@ public class SecurityConfig {
         private final CustomUserDetailService customUserDetailsService;
 
 
-
         private static final String[] AUTH_WHITELIST = {
-                        "/api/v1/member/**", "/api-docs",
+                "/api/v1/member/**", "/api-docs",
                 "/v3/api-docs/**", "/api-docs/**", "/api/v1/auth/**",
-                "user/signup", "user/login","/api/doc/swagger-ui/**"
+                "api/user/signup", "api/user/login","/api/doc/swagger-ui/**","/stomp/chat/**", "/pub/**", "/sub/**"
+
         }; //더 열어둘 엔드포인트 여기에 추가
 
 
@@ -48,6 +48,7 @@ public class SecurityConfig {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
             http.csrf((csrf)->csrf.disable());
             http.cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()));
+
             //세션 사용 안 함
             http.sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(
                     SessionCreationPolicy.STATELESS));
@@ -63,6 +64,7 @@ public class SecurityConfig {
             // 권한 규칙 작성
             http.authorizeHttpRequests(authorize -> authorize
                     .requestMatchers(AUTH_WHITELIST).permitAll()
+
                     .anyRequest().authenticated()
             );
 
