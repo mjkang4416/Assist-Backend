@@ -28,7 +28,7 @@ public class SwaggerConfig {
 
 
         return new OpenAPI()
-                .addServersItem(localServer)
+                .addServersItem(new Server().url("/").description("올래 Server"))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(
                         new Components()
